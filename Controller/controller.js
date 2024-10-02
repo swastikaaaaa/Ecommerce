@@ -136,6 +136,47 @@ UpdateProduct = async(req,res)=>{
 
 }
 
+/**
+ * @swagger
+ * /index/details/getallcartdetails:
+ *   get:
+ *     summary: Retrieve all categories
+ *     description: Fetches a list of all categories from the CartDetail collection.
+ *     responses:
+ *       200:
+ *         description: A list of categories.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: The unique identifier for a category.
+ *                     example: 60f73bcf9e6b9c00123a4b6e
+ *                   name:
+ *                     type: string
+ *                     description: The name of the category.
+ *                     example: Electronics
+ *                   description:
+ *                     type: string
+ *                     description: The description of the category.
+ *                     example: All electronic gadgets and appliances.
+ *       400:
+ *         description: Bad request. Returns an error if the request fails.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message explaining why the request failed.
+ *                   example: "Error fetching categories."
+ */
+
 
 GetAllCategory = async(req,res)=>{
     try{
@@ -152,6 +193,61 @@ GetAllCategory = async(req,res)=>{
     
 
 }
+/**
+ * @swagger
+ * /index/details/postcartdetails:
+ *   post:
+ *     summary: Create a new cart detail entry
+ *     description: Adds a new entry to the CartDetail collection with a product ID and total amount.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               PrdId:
+ *                 type: string
+ *                 description: The product ID that the cart entry refers to.
+ *                 example: 60f73bcf9e6b9c00123a4b6e
+ *               Total:
+ *                 type: number
+ *                 description: The total amount for the product in the cart.
+ *                 example: 1500
+ *     responses:
+ *       200:
+ *         description: Successfully created a new cart detail entry.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The unique identifier for the cart detail entry.
+ *                   example: 61a6fd58fbc1a62a4fb68a47
+ *                 PrdId:
+ *                   type: string
+ *                   description: The product ID associated with this cart detail.
+ *                   example: 60f73bcf9e6b9c00123a4b6e
+ *                 Total:
+ *                   type: number
+ *                   description: The total value for the product in the cart.
+ *                   example: 1500
+ *       400:
+ *         description: Bad request. Returns an error if the request data is invalid.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message explaining why the request failed.
+ *                   example: "PrdId is required."
+ */
+
+
 
 PostAllCategory = async(req,res)=>{
     try{
