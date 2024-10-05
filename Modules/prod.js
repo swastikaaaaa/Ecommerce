@@ -29,7 +29,7 @@ const prod = mongoose.Schema({
 // module.exports=prd;
 
 const mongoosee =require('mongoose')
-const CartDetails = mongoose.Schema({
+const CartDetails = mongoosee.Schema({
 
     PrdId:
     {
@@ -44,7 +44,30 @@ const CartDetails = mongoose.Schema({
         required:true
     }
 })
+const mongooseee= require('mongoose')
+
+const UserDetails=mongoose.Schema({
+    UserName:
+    {
+        type:String,
+        required:true
+    },
+    EmailAddress:
+    {
+        type:String,
+        required:true,
+        unique:true,
+
+    },
+    Password:
+    {
+        type:String,
+        required:true,
+        unique:true
+    }
+})
 const prodd=mongoose.model('prod',prod)
 const CartDetail=mongoose.model('CartDetails',CartDetails)
+const UserDetail = mongoose.model('UserDetails',UserDetails)
 
-module.exports=({prodd,CartDetail});
+module.exports=({prodd,CartDetail,UserDetail});
