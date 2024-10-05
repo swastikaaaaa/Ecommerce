@@ -1,13 +1,14 @@
 const express = require('express');
 const app=express();
 app.use(express.urlencoded({ extended: true }));
-const {prodd,CartDetail}=require("../Modules/prod");
+const {prodd,CartDetail,UserDetail}=require("../Modules/prod");
 app.use(express.json());
 require('dotenv').config();
+const bcrypt = require('bcrypt');
+const Secret_Key=require("../auth.js");
 
 
 //const CartDetails = require("../Modules/CartDetails");
-
 
 
 /**
@@ -261,11 +262,168 @@ PostAllCategory = async(req,res)=>{
     }
     catch(error){
         res.status(400).send(error.message);
+    }}
+
+    /**
+ * @swagger
+ * /index/details/register:
+ *   post:
+ *     summary: Create a new user
+ *     description: Creates a new user with a username, password, and email address.
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               UserName:
+ *                 type: string
+ *                 example: johndoe
+ *               Password:
+ *                 type: string
+ *                 example: yourpassword123
+ *               EmailAddress:
+ *                 type: string
+ *                 example: johndoe@example.com
+ *     responses:
+ *       200:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 UserName:
+ *                   type: string
+ *                 Password:
+ *                   type: string
+ *                 EmailAddress:
+ *                   type: string
+ *               example:
+ *                 _id: 60d0fe4f5311236168a109ca
+ *                 UserName: johndoe
+ *                 Password: yourpassword123
+ *                 EmailAddress: johndoe@example.com
+ *       400:
+ *         description: Bad request (Error creating the user)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: UserName is required
+ */
+
+
+
+PostUser=async(req,res)=>{
+    console.log(req.body);
+    res.send("mula");
+    try{
+        user=new UserDetail({UserName:req.UserName,Password:req.Password,EmailAddress:req.EmailAddress});
+        user=await user.save();
+        console.log(user);
+        res.send(user,"user created successfully");
+
+        }
+
+        catch(error){
+            res.status(400).send(error.message);
+        }
     }
+
+    /**
+ * @swagger
+ * /index/details/login:
+ *   post:
+ *     summary: Authenticate user by username and password
+ *     description: This endpoint authenticates a user by checking their username and password.
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       description: Object containing UserName, EmailAddress, and Password
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               UserName:
+ *                 type: string
+ *                 description: The user's username
+ *                 example: john_doe
+ *               EmailAddress:
+ *                 type: string
+ *                 description: The user's email address
+ *                 example: johndoe@example.com
+ *               Password:
+ *                 type: string
+ *                 description: The user's password
+ *                 example: Pass1234!
+ *     responses:
+ *       200:
+ *         description: User authenticated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User authenticated successfully
+ *       400:
+ *         description: Invalid username or password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Invalid Username or Password
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: An error occurred during authentication
+ */
+    
+UserInfo=async(req,res)=>{
+    const{UserName,EmailAddress,Password}=req.body
+    try{
+        const User=await UserInfo.find({UserName})
+        if(!User){
+            res.send("Invalid UserName")    
+        }
+        const PasswordMatch=await bcrypt.compare(Password,UserInfo.Password);
+        if(!PasswordMatch){
+            res.send("Invalid Password");
+        }
+        res.status(200).send("User authenticated successfully");
+
+//generate token
+const token=jwt.sign({'UserName':Username,'EmailAddress':EmailAddress,'Password':Password},Secret_Key,{expiresIn:'1h'});
+console.log(token);
+res.json(token);
+    }
+
+catch(error){
+    res.status(400).send(error.message);
 
 }
 
-module.exports={
-    PostProduct,UpdateProduct,GetAllCategory,PostAllCategory
-}   
 
+}
+
+module.exports = {
+    PostProduct,UpdateProduct,GetAllCategory,PostAllCategory,UserInfo,PostUser
+}
