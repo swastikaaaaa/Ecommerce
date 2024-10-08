@@ -253,8 +253,6 @@ GetAllCategory = async(req,res)=>{
 PostAllCategory = async(req,res)=>{
     try{
 
-    
-
     CartDetailss= new CartDetail({PrdId: req.body.PrdId, Total:req.body.Total});
     CartDetailss=await CartDetailss.save();
     console.log(CartDetailss);
@@ -264,14 +262,12 @@ PostAllCategory = async(req,res)=>{
         res.status(400).send(error.message);
     }}
 
-    /**
+/**
  * @swagger
  * /index/details/register:
  *   post:
  *     summary: Create a new user
- *     description: Creates a new user with a username, password, and email address.
- *     tags:
- *       - Users
+ *     description: Creates a new user with a username, password, and email address.      
  *     requestBody:
  *       required: true
  *       content:
@@ -319,16 +315,14 @@ PostAllCategory = async(req,res)=>{
  */
 
 
+PostUser = async(req,res)=>{
 
-PostUser=async(req,res)=>{
     console.log(req.body);
-    res.send("mula");
     try{
-        user=new UserDetail({UserName:req.UserName,Password:req.Password,EmailAddress:req.EmailAddress});
-        user=await user.save();
-        console.log(user);
-        res.send(user,"user created successfully");
-
+        const hashedpassword=await bcrypt.hash(req.body.Password,10);
+        user=new UserDetail({UserName:req.body.UserName,EmailAddress:req.body.EmailAddress,Password:hashedpassword});
+        users=await user.save();
+        res.send(users+"la save gariyo hajur");
         }
 
         catch(error){
@@ -398,26 +392,29 @@ PostUser=async(req,res)=>{
  */
     
 UserInfo=async(req,res)=>{
+    console.log("hit chai vayo hai sathi")
     const{UserName,EmailAddress,Password}=req.body
+    console.log(UserName +"parsed");
     try{
-        const User=await UserInfo.find({UserName})
+        console.log("hit")
+        const User=await UserDetail.findOne({UserName});
         if(!User){
-            res.send("Invalid UserName")    
+            return res.send("Invalid UserName");   
         }
-        const PasswordMatch=await bcrypt.compare(Password,UserInfo.Password);
+        const PasswordMatch=await bcrypt.compare(Password,User.Password);
         if(!PasswordMatch){
-            res.send("Invalid Password");
+            return res.send("Invalid Password");
         }
         res.status(200).send("User authenticated successfully");
 
 //generate token
-const token=jwt.sign({'UserName':Username,'EmailAddress':EmailAddress,'Password':Password},Secret_Key,{expiresIn:'1h'});
+const token=jwt.sign({'UserName':UserName,'EmailAddress':EmailAddress,'Password':Password},Secret_Key,{expiresIn:'1h'});
 console.log(token);
-res.json(token);
-    }
+return res.json(token);
+}
 
 catch(error){
-    res.status(400).send(error.message);
+    return res.status(400).send(error.message);
 
 }
 
